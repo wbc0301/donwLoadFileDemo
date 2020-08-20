@@ -9,12 +9,23 @@
 
 <body>
   <div>
-    <h1>开心</h1>
-    <p>是真的</p>
-    <button id="btn1">下载HTML</button>
-    <button id="btn2">下载XLS</button>
-    <a href="http://localhost:3000/getHTML"> <button>a</button> </a>
-    <a href="http://localhost:3000/getHTML" download="bb.html"><button>a + download</button></a>
+    <h1>验证下载文件</h1>
+    <p>开始</p>
+    <p>
+      <p><button id="btn1">ajax下载HTML</button></p>
+      <p><button id="btn2">ajax下载XLS</button></p>
+    </p>
+
+    <p>以下为a便签直接下载</p>
+    <p>
+      <a href="http://localhost:3000/getHTML"> <button>html</button> </a>
+      <a href="http://localhost:3000/getHTML" download="bb.html"><button>html + download</button></a>
+    </p>
+
+    <p>
+      <a href="http://localhost:3000/getXLS"> <button>xls</button> </a>
+      <a href="http://localhost:3000/getXLS" download="bb.xls"><button>xls + download</button></a>
+    </p>
   </div>
 
 
@@ -26,10 +37,9 @@
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var data = xhr.responseText
-          var blob = new Blob([data], {type: 'text/html;charset=utf-8'});
-            console.log(blob)
+          var blob = new Blob([data], { type: 'text/html;charset=utf-8' });
           var reader = new FileReader();
-          reader.addEventListener('load', function() {
+          reader.addEventListener('load', function () {
             var a = document.createElement('a');
             a.download = 'aaa.html';
             console.log(reader.result)
@@ -46,18 +56,22 @@
       xhr.send();
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
+          console.log(xhr)
           var data = xhr.responseText
-          var blob = new Blob([data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-            console.log(blob)
-          var reader = new FileReader();
-          reader.addEventListener('load', function() {
-            var a = document.createElement('a');
-            a.download = 'aaa.xls';
-            console.log(reader.result)
-            a.href = reader.result;
-            a.click();
-          })
-          reader.readAsDataURL(blob);
+          var blob = new Blob([data], { type: 'application/vnd.ms-excel;charset=utf-8' });
+          // var reader = new FileReader();
+          // reader.addEventListener('load', function() {
+          //   var a = document.createElement('a');
+          //   a.download = 'aaa.xls';
+          //   console.log(reader.result)
+          //   a.href = reader.result;
+          //   a.click();
+          // })
+          // reader.readAsDataURL(blob);
+          var a = document.createElement('a');
+          a.download = 'aaa.xls';
+          a.href = URL.createObjectURL(blob)
+          a.click();
         }
       }
     }
