@@ -12,11 +12,13 @@
     <h1>验证下载文件</h1>
     <p>开始</p>
     <p>
-      <p><button id="btn1">ajax下载HTML</button></p>
-      <p><button id="btn2">ajax下载XLS</button></p>
+    <p><button id="btn0">请求接口apiDemo</button></p>
+    <p><button id="btn1">原生ajax下载HTML</button></p>
+    <p><button id="btn2">原生ajax下载XLS</button></p>
+    <p><button id="btn3">axios ajax下载XLS</button></p>
     </p>
 
-    <p>以下为a便签直接下载</p>
+    <p>以下为a标签直接下载</p>
     <p>
       <a href="http://localhost:3000/getHTML"> <button>html</button> </a>
       <a href="http://localhost:3000/getHTML" download="bb.html"><button>html + download</button></a>
@@ -28,11 +30,18 @@
     </p>
   </div>
 
-
+  <script src="/axios"></script>
   <script>
+    btn0.onclick = function () {
+      axios('/apiDemo').then(res => {
+        console.log(res)
+      })
+    }
+
     btn1.onclick = function () {
       let xhr = new XMLHttpRequest();
       xhr.open('GET', '/getHTML');
+      xhr.responseType = 'text'; // html文件是文本文件所以可以用 '' 或者 text
       xhr.send();
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
@@ -42,7 +51,6 @@
           reader.addEventListener('load', function () {
             var a = document.createElement('a');
             a.download = 'aaa.html';
-            console.log(reader.result)
             a.href = reader.result;
             a.click();
           })
@@ -50,30 +58,34 @@
         }
       }
     }
+
     btn2.onclick = function () {
       let xhr = new XMLHttpRequest();
       xhr.open('GET', '/getXLS');
+      xhr.setRequestHeader('Accept', 'application/json, text/plain, */*')
+      xhr.responseType = 'blob'; // xls不是文本文件，所以不能用默认的json值 必须设置为blob, 
       xhr.send();
       xhr.onreadystatechange = function () {
         if (xhr.readyState === 4 && xhr.status === 200) {
-          console.log(xhr)
-          var data = xhr.responseText
+          var data = xhr.response // 只能用 xhr.response
           var blob = new Blob([data], { type: 'application/vnd.ms-excel;charset=utf-8' });
-          // var reader = new FileReader();
-          // reader.addEventListener('load', function() {
-          //   var a = document.createElement('a');
-          //   a.download = 'aaa.xls';
-          //   console.log(reader.result)
-          //   a.href = reader.result;
-          //   a.click();
-          // })
-          // reader.readAsDataURL(blob);
           var a = document.createElement('a');
           a.download = 'aaa.xls';
           a.href = URL.createObjectURL(blob)
           a.click();
         }
       }
+    }
+
+    btn3.onclick = function () {
+      axios.get('/getXLS', { responseType: 'blob' }).then(res => {
+        var data = res.data
+        var blob = new Blob([data], { type: 'application/vnd.ms-excel;charset=utf-8' });
+        var a = document.createElement('a');
+        a.download = 'aaa.xls';
+        a.href = URL.createObjectURL(blob)
+        a.click();
+      })
     }
 
 
